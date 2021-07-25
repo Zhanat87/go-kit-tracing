@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/openzipkin/zipkin-go"
+
 	"github.com/Zhanat87/go-kit-tracing/transport"
 )
 
@@ -13,14 +15,17 @@ type HTTPService interface {
 }
 
 type httpService struct {
-	service Service
+	service      Service
+	zipkinTracer *zipkin.Tracer
 }
 
-func NewHTTPService() HTTPService {
-	return &httpService{service: NewService()}
+func NewHTTPService(zipkinTracer *zipkin.Tracer) HTTPService {
+	return &httpService{service: NewService(zipkinTracer), zipkinTracer: zipkinTracer}
 }
 
 func (s *httpService) HTTP(ctx context.Context, req interface{}) (interface{}, error) {
+	span, ctx := s.zipkinTracer.StartSpanFromContext(ctx, "pong http service response")
+	defer span.Finish()
 	pongRequest, ok := req.(*transport.PongRequest)
 	if !ok {
 		return nil, fmt.Errorf("error convert transport.pongRequest: %#v", req)

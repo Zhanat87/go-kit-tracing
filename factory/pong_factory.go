@@ -11,7 +11,7 @@ import (
 type PongServiceFactory struct{}
 
 func (s *PongServiceFactory) CreateHTTPService(packageName string, logger log.Logger, zipkinTracer *zipkin.Tracer) pong.HTTPService {
-	srv := pong.NewHTTPService()
+	srv := pong.NewHTTPService(zipkinTracer)
 	srv = middleware.NewPongLoggingMiddleware(srv, packageName, log.With(logger, "component", packageName))
 	counter, duration, counterError := instrumenting.GetMetricsBySubsystem(packageName)
 	srv = middleware.NewPongInstrumentingMiddleware(srv, packageName, counter, duration, counterError)
