@@ -7,8 +7,6 @@ import (
 
 	"github.com/openzipkin/zipkin-go"
 
-	"github.com/openzipkin/zipkin-go"
-
 	"github.com/Zhanat87/common-libs/utils"
 )
 
@@ -30,7 +28,7 @@ func NewService(zipkinTracer *zipkin.Tracer) Service {
 }
 
 func (s *service) Pong(ctx context.Context, ping string) (string, error) {
-	span, ctx := s.zipkinTracer.StartSpanFromContext(ctx, "pong service response on ping request: "+ping)
+	span, _ := s.zipkinTracer.StartSpanFromContext(ctx, "pong service response on ping request: "+ping)
 	defer span.Finish()
 	time.Sleep(22 * time.Millisecond)
 	dateTime, err := utils.GetCurrentDateTime(os.Getenv("TIME_ZONE"))
